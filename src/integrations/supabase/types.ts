@@ -417,6 +417,7 @@ export type Database = {
         Row: {
           account_id: string | null
           amount: number
+          converted_document_id: string | null
           created_at: string
           created_by: string | null
           currency: Database["public"]["Enums"]["currency_code"]
@@ -434,11 +435,13 @@ export type Database = {
           tenant_id: string
           terms: string | null
           to_warehouse_id: string | null
+          valid_until: string | null
           warehouse_id: string | null
         }
         Insert: {
           account_id?: string | null
           amount?: number
+          converted_document_id?: string | null
           created_at?: string
           created_by?: string | null
           currency?: Database["public"]["Enums"]["currency_code"]
@@ -456,11 +459,13 @@ export type Database = {
           tenant_id: string
           terms?: string | null
           to_warehouse_id?: string | null
+          valid_until?: string | null
           warehouse_id?: string | null
         }
         Update: {
           account_id?: string | null
           amount?: number
+          converted_document_id?: string | null
           created_at?: string
           created_by?: string | null
           currency?: Database["public"]["Enums"]["currency_code"]
@@ -478,6 +483,7 @@ export type Database = {
           tenant_id?: string
           terms?: string | null
           to_warehouse_id?: string | null
+          valid_until?: string | null
           warehouse_id?: string | null
         }
         Relationships: [
@@ -486,6 +492,13 @@ export type Database = {
             columns: ["account_id"]
             isOneToOne: false
             referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_converted_document_id_fkey"
+            columns: ["converted_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
             referencedColumns: ["id"]
           },
           {
