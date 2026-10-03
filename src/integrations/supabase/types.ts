@@ -160,6 +160,38 @@ export type Database = {
         }
         Relationships: []
       }
+      backups: {
+        Row: {
+          created_at: string
+          file_path: string
+          id: string
+          size_bytes: number | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_path: string
+          id?: string
+          size_bytes?: number | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          file_path?: string
+          id?: string
+          size_bytes?: number | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backups_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       banks: {
         Row: {
           account_id: string | null
@@ -552,6 +584,60 @@ export type Database = {
           },
         ]
       }
+      employee_adjustments: {
+        Row: {
+          adj_date: string
+          amount: number
+          applied: boolean
+          created_at: string
+          employee_id: string
+          id: string
+          kind: string
+          notes: string | null
+          payroll_month: string | null
+          tenant_id: string
+        }
+        Insert: {
+          adj_date?: string
+          amount?: number
+          applied?: boolean
+          created_at?: string
+          employee_id: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          payroll_month?: string | null
+          tenant_id: string
+        }
+        Update: {
+          adj_date?: string
+          amount?: number
+          applied?: boolean
+          created_at?: string
+          employee_id?: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          payroll_month?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_adjustments_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_adjustments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_advances: {
         Row: {
           adv_date: string
@@ -603,53 +689,126 @@ export type Database = {
           },
         ]
       }
+      employee_leaves: {
+        Row: {
+          created_at: string
+          employee_id: string
+          end_date: string
+          id: string
+          leave_type: string
+          notes: string | null
+          start_date: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          employee_id: string
+          end_date: string
+          id?: string
+          leave_type?: string
+          notes?: string | null
+          start_date: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string
+          end_date?: string
+          id?: string
+          leave_type?: string
+          notes?: string | null
+          start_date?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_leaves_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_leaves_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employees: {
         Row: {
+          account_id: string | null
+          address: string | null
           allowances: number
+          bank_account: string | null
           base_salary: number
           code: string | null
           created_at: string
           currency: string
+          department: string | null
+          email: string | null
           hire_date: string | null
           id: string
           is_active: boolean
           job_title: string | null
           name: string
+          national_id: string | null
           notes: string | null
           phone: string | null
           tenant_id: string
         }
         Insert: {
+          account_id?: string | null
+          address?: string | null
           allowances?: number
+          bank_account?: string | null
           base_salary?: number
           code?: string | null
           created_at?: string
           currency?: string
+          department?: string | null
+          email?: string | null
           hire_date?: string | null
           id?: string
           is_active?: boolean
           job_title?: string | null
           name: string
+          national_id?: string | null
           notes?: string | null
           phone?: string | null
           tenant_id: string
         }
         Update: {
+          account_id?: string | null
+          address?: string | null
           allowances?: number
+          bank_account?: string | null
           base_salary?: number
           code?: string | null
           created_at?: string
           currency?: string
+          department?: string | null
+          email?: string | null
           hire_date?: string | null
           id?: string
           is_active?: boolean
           job_title?: string | null
           name?: string
+          national_id?: string | null
           notes?: string | null
           phone?: string | null
           tenant_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "employees_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "employees_tenant_id_fkey"
             columns: ["tenant_id"]
@@ -1355,6 +1514,7 @@ export type Database = {
       recurring_entries: {
         Row: {
           amount: number
+          approval_mode: string
           created_at: string
           credit_account_id: string
           currency: string
@@ -1370,6 +1530,7 @@ export type Database = {
         }
         Insert: {
           amount?: number
+          approval_mode?: string
           created_at?: string
           credit_account_id: string
           currency?: string
@@ -1385,6 +1546,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          approval_mode?: string
           created_at?: string
           credit_account_id?: string
           currency?: string
@@ -1927,6 +2089,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_prefs: {
+        Row: {
+          dashboard: Json | null
+          notif: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          dashboard?: Json | null
+          notif?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          dashboard?: Json | null
+          notif?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       warehouses: {
         Row: {
