@@ -11,7 +11,16 @@ import { db } from "@/lib/db";
 import { generateEan13, printStickers } from "@/lib/barcode";
 
 export const Route = createFileRoute("/_authenticated/products")({
-  head: () => ({ meta: [{ title: "المواد والباركود" }, { name: "description", content: "بطاقات المواد مع توليد وطباعة الباركود" }] }),
+  head: () => ({
+    meta: [
+      { title: "المواد والتصنيفات | يوسف سوفت" },
+      { name: "description", content: "إدارة بطاقات المواد وتصنيفاتها وأسعار البيع والباركود." },
+      { property: "og:title", content: "المواد والتصنيفات | يوسف سوفت" },
+      { property: "og:description", content: "إدارة بطاقات المواد وتصنيفاتها وأسعار البيع والباركود." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ProductsPage,
 });
 
