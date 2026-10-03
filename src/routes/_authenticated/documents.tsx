@@ -111,6 +111,7 @@ function DocumentsPage() {
 
   const create = useMutation({
     mutationFn: async () => {
+      const linesTotal = lines.reduce((s, l) => s + (Number(l.qty) || 0) * (Number(l.unit_price) || 0), 0);
       const payload = {
         tenant_id: me!.tenantId,
         doc_type: form.doc_type,
@@ -124,7 +125,7 @@ function DocumentsPage() {
           form.doc_type === "receipt" || form.doc_type === "payment" ? form.settles_document_id || null : null,
         project_id: form.doc_type === "sale" || form.doc_type === "purchase" ? null : form.project_id || null,
         account_id: form.account_id || null,
-        amount: meta.lines ? 0 : Number(form.amount) || 0,
+        amount: meta.lines ? linesTotal : Number(form.amount) || 0,
         notes: form.notes || null,
         valid_until: form.doc_type === "quote" ? form.valid_until || null : null,
         terms: form.doc_type === "quote" ? form.terms || null : null,
@@ -209,7 +210,9 @@ function DocumentsPage() {
       const wh = d.warehouse_id || ref.data?.warehouses?.[0]?.id || null;
       const { data: inv, error } = await db.from("documents").insert({
         tenant_id: me!.tenantId, doc_type: "sale", doc_date: today(), currency: d.currency, exchange_rate: d.exchange_rate,
-        partner_id: d.partner_id, warehouse_id: wh, amount: 0, notes: `من عرض السعر رقم ${d.doc_no}${d.notes ? " — " + d.notes : ""}`,
+        partner_id: d.partner_id, warehouse_id: wh,
+        amount: ls.reduce((s, l) => s + (Number(l.qty) || 0) * (Number(l.unit_price) || 0), 0),
+        notes: `من عرض السعر رقم ${d.doc_no}${d.notes ? " — " + d.notes : ""}`,
       }).select().single();
       if (error) throw error;
       const { error: lErr } = await db.from("document_lines").insert(
