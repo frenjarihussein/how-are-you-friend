@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { NAV, QUICK_ACTIONS } from "@/components/AppShell";
 import { Sparkline } from "@/components/StatCards";
 import { ArrowUpLeft } from "lucide-react";
+import { useDueCount } from "@/components/ExtraReports";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "لوحة التحكم" }, { name: "description", content: "مؤشرات مالية وتنبيهات المخزون" }] }),
@@ -223,5 +224,15 @@ function Dashboard() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function DueBanner() {
+  const due = useDueCount();
+  if (!due.data) return null;
+  return (
+    <Link to="/reports" className="mb-4 block rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+      لديك {due.data} شيك مستحق أو متأخر خلال 7 أيام — اضغط لعرض الاستحقاقات من صفحة التقارير
+    </Link>
   );
 }
