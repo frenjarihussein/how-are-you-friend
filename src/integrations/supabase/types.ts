@@ -432,6 +432,7 @@ export type Database = {
           settles_document_id: string | null
           status: string
           tenant_id: string
+          terms: string | null
           to_warehouse_id: string | null
           warehouse_id: string | null
         }
@@ -453,6 +454,7 @@ export type Database = {
           settles_document_id?: string | null
           status?: string
           tenant_id: string
+          terms?: string | null
           to_warehouse_id?: string | null
           warehouse_id?: string | null
         }
@@ -474,6 +476,7 @@ export type Database = {
           settles_document_id?: string | null
           status?: string
           tenant_id?: string
+          terms?: string | null
           to_warehouse_id?: string | null
           warehouse_id?: string | null
         }
