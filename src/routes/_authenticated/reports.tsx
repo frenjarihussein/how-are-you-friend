@@ -11,8 +11,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, Printer } from "lucide-react";
+import { AgingReport, DueAlertsReport, ProjectProfitReport } from "@/components/ExtraReports";
 
-export const Route = createFileRoute("/_authenticated/reports")({ component: ReportsPage });
+export const Route = createFileRoute("/_authenticated/reports")({
+  component: ReportsPage,
+  head: () => ({
+    meta: [
+      { title: "التقارير المالية | يوسف سوفت" },
+      { name: "description", content: "ميزان المراجعة وقائمة الدخل وربحية المشاريع وأعمار الذمم وتنبيهات الاستحقاق" },
+      { property: "og:title", content: "التقارير المالية | يوسف سوفت" },
+      { property: "og:description", content: "تقارير مالية لحظية وربحية المشاريع وأعمار الذمم" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+});
 
 type Row = { code: string; name: string; nature: string; debit: number; credit: number; balance: number };
 
@@ -161,10 +174,13 @@ function ReportsPage() {
         </div>
       </div>
       <Tabs defaultValue="tb" dir="rtl">
-        <TabsList className="no-print mb-4">
+        <TabsList className="no-print mb-4 h-auto flex-wrap">
           <TabsTrigger value="tb">ميزان المراجعة</TabsTrigger>
           <TabsTrigger value="is">قائمة الدخل</TabsTrigger>
           <TabsTrigger value="bs">الميزانية العمومية</TabsTrigger>
+          <TabsTrigger value="pp">ربحية المشاريع</TabsTrigger>
+          <TabsTrigger value="aging">أعمار الذمم</TabsTrigger>
+          <TabsTrigger value="due">الاستحقاقات</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tb">
@@ -178,6 +194,15 @@ function ReportsPage() {
         </TabsContent>
         <TabsContent value="bs">
           <ReportTable title="الميزانية العمومية" rows={bs} />
+        </TabsContent>
+        <TabsContent value="pp">
+          <ProjectProfitReport from={from} to={to} />
+        </TabsContent>
+        <TabsContent value="aging">
+          <AgingReport />
+        </TabsContent>
+        <TabsContent value="due">
+          <DueAlertsReport />
         </TabsContent>
       </Tabs>
     </div>
