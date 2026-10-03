@@ -1097,6 +1097,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_kind: string
           created_at: string
           email: string | null
           full_name: string
@@ -1109,6 +1110,7 @@ export type Database = {
           tenant_id: string | null
         }
         Insert: {
+          account_kind?: string
           created_at?: string
           email?: string | null
           full_name?: string
@@ -1121,6 +1123,7 @@ export type Database = {
           tenant_id?: string | null
         }
         Update: {
+          account_kind?: string
           created_at?: string
           email?: string | null
           full_name?: string
