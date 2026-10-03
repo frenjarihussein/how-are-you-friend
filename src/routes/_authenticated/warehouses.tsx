@@ -1,6 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { CrudPage } from "@/components/CrudPage";
 import { EntityTree } from "@/components/EntityTree";
+import { Button } from "@/components/ui/button";
+import { FileText } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/warehouses")({ component: WarehousesPage });
 
@@ -12,9 +14,16 @@ function WarehousesPage() {
       table="warehouses"
       module="warehouses"
       title="المستودعات"
-      subtitle="تعريف المستودعات ومواقعها. المستودعات ذات الحركات لا تُحذف بل تُجمّد"
+      subtitle="تعريف المستودعات ومواقعها. اضغط أيقونة الكشف لعرض كشف حساب المستودع"
       orderBy="name"
       ascending
+      extraRowAction={(row) => (
+        <Button asChild size="icon" variant="ghost" title="كشف حساب المستودع">
+          <Link to="/ledgers" search={{ tab: "warehouse", id: row.id }}>
+            <FileText className="size-4" />
+          </Link>
+        </Button>
+      )}
       fields={[
         { key: "code", label: "الرمز" },
         { key: "parent_id", label: "الأب", type: "ref", refTable: "warehouses" },

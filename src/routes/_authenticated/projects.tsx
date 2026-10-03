@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CrudPage } from "@/components/CrudPage";
 import { EntityTree } from "@/components/EntityTree";
 import { Button } from "@/components/ui/button";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, FileText } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/projects")({ component: ProjectsPage });
 
@@ -20,15 +20,32 @@ function ProjectsPage() {
       dateKey="start_date"
       facetKeys={["status", "currency", "client_id"]}
       extraRowAction={(row) => (
+        <>
         <Button asChild size="icon" variant="ghost" title="تفاصيل المشروع">
           <Link to="/projects/$projectId" params={{ projectId: row.id }}>
             <BarChart3 className="size-4" />
           </Link>
         </Button>
+        <Button asChild size="icon" variant="ghost" title="كشف حساب المشروع">
+          <Link to="/ledgers" search={{ tab: "project", id: row.id }}>
+            <FileText className="size-4" />
+          </Link>
+        </Button>
+        </>
       )}
       fields={[
         { key: "code", label: "رمز المشروع" },
-        { key: "parent_id", label: "الأب", type: "ref", refTable: "projects" },
+        {
+          key: "parent_id",
+          label: "التصنيف",
+          type: "ref",
+          refTable: "projects",
+          refFilter: { key: "is_group", value: true },
+          refQuickAdd: {
+            label: "إضافة تصنيف",
+            defaults: { is_group: true, is_active: true, contract_value: 0, currency: "USD", status: "active" },
+          },
+        },
         { key: "name", label: "اسم المشروع", required: true },
         { key: "client_id", label: "الزبون", type: "ref", refTable: "partners" },
         { key: "contract_value", label: "قيمة العقد", type: "number", defaultValue: 0 },
