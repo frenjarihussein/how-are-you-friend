@@ -131,6 +131,7 @@ function Dashboard() {
         <PageHeader title={`أهلاً ${me?.fullName ?? ""}`} subtitle="اختصاراتك ومؤشراتك المختارة" />
         <Button variant="outline" onClick={() => setEdit(true)}><Settings2 className="size-4" />تخصيص الواجهة</Button>
       </div>
+      <DueBanner />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {QUICK_ACTIONS.filter((a) => moduleEnabled(me, a.module)).map((a) => (
           <Link key={a.label} to={a.to} className="group relative flex flex-col gap-6 rounded-2xl border bg-card p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-pop">
