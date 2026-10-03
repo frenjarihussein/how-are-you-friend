@@ -44,6 +44,8 @@ export type CrudField = {
   options?: { value: string; label: string }[];
   refTable?: string;
   refLabel?: string;
+  refFilter?: { key: string; value: string | number | boolean };
+  refQuickAdd?: { label: string; defaults?: Record<string, unknown> };
   required?: boolean;
   defaultValue?: string | number | boolean;
   hideInTable?: boolean;
@@ -121,9 +123,9 @@ export function CrudPage(props: Props) {
     queryFn: async () => {
       const out: Record<string, { value: string; label: string }[]> = {};
       for (const f of refFields) {
-        const { data } = await scoped(db.from(f.refTable!).select(`id, ${f.refLabel ?? "name"}`)).order(
-          f.refLabel ?? "name",
-        );
+        let query = scoped(db.from(f.refTable!).select(`id, ${f.refLabel ?? "name"}`));
+        if (f.refFilter) query = query.eq(f.refFilter.key, f.refFilter.value);
+        const { data } = await query.order(f.refLabel ?? "name");
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         out[f.key] = (data ?? []).map((r: any) => ({ value: r.id, label: r[f.refLabel ?? "name"] }));
       }
@@ -166,6 +168,25 @@ export function CrudPage(props: Props) {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  async function quickAddRef(field: CrudField) {
+    if (!field.refTable || !field.refQuickAdd || !tenantId) return;
+    const name = window.prompt(field.refQuickAdd.label);
+    if (!name?.trim()) return;
+    const { data, error } = await db
+      .from(field.refTable)
+      .insert({ tenant_id: tenantId, name: name.trim(), ...field.refQuickAdd.defaults })
+      .select(`id, ${field.refLabel ?? "name"}`)
+      .single();
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setForm((current) => ({ ...current, [field.key]: data.id }));
+    await queryClient.invalidateQueries({ queryKey: ["refs", table] });
+    await queryClient.invalidateQueries({ queryKey: [field.refTable] });
+    toast.success("تمت إضافة التصنيف");
+  }
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -427,20 +448,28 @@ export function CrudPage(props: Props) {
                 <div key={f.key} className="space-y-1.5">
                   <Label htmlFor={f.key}>{t(f.label)}</Label>
                   {f.type === "select" || f.type === "ref" ? (
-                    <select
-                      id={f.key}
-                      className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
-                      value={String(form[f.key] ?? "")}
-                      required={f.required}
-                      onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                    >
-                      <option value="">{t("— اختر —")}</option>
-                      {(f.type === "ref" ? (refQueries.data?.[f.key] ?? []) : (f.options ?? [])).map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {t(o.label)}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex gap-2">
+                      <select
+                        id={f.key}
+                        className="h-10 min-w-0 flex-1 rounded-md border border-input bg-background px-3 text-sm"
+                        value={String(form[f.key] ?? "")}
+                        required={f.required}
+                        onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+                      >
+                        <option value="">{t("— اختر —")}</option>
+                        {(f.type === "ref" ? (refQueries.data?.[f.key] ?? []) : (f.options ?? [])).map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {t(o.label)}
+                          </option>
+                        ))}
+                      </select>
+                      {f.type === "ref" && f.refQuickAdd && (
+                        <Button type="button" variant="outline" onClick={() => quickAddRef(f)}>
+                          <Plus className="size-4" />
+                          {t(f.refQuickAdd.label)}
+                        </Button>
+                      )}
+                    </div>
                   ) : f.type === "textarea" ? (
                     <Textarea
                       id={f.key}

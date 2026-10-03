@@ -11,7 +11,16 @@ import { db } from "@/lib/db";
 import { generateEan13, printStickers } from "@/lib/barcode";
 
 export const Route = createFileRoute("/_authenticated/products")({
-  head: () => ({ meta: [{ title: "المواد والباركود" }, { name: "description", content: "بطاقات المواد مع توليد وطباعة الباركود" }] }),
+  head: () => ({
+    meta: [
+      { title: "المواد والتصنيفات | يوسف سوفت" },
+      { name: "description", content: "إدارة بطاقات المواد وتصنيفاتها وأسعار البيع والباركود." },
+      { property: "og:title", content: "المواد والتصنيفات | يوسف سوفت" },
+      { property: "og:description", content: "إدارة بطاقات المواد وتصنيفاتها وأسعار البيع والباركود." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ProductsPage,
 });
 
@@ -20,7 +29,7 @@ function ProductsPage() {
   const qc = useQueryClient();
   return (
     <>
-    <EntityTree table="products" module="products" title="شجرة المواد" codeField="sku" buildInsert={(p, code) => (code ? { unit: p?.["unit"] ?? "قطعة" } : null)} usageCheck={{ table: "stock_moves", column: "product_id", message: "لا يمكن حذف مادة لها حركات" }} />
+    <EntityTree table="products" module="products" title="تصنيفات المواد" codeField="sku" buildInsert={(p, code) => (code ? { unit: p?.["unit"] ?? "قطعة" } : null)} usageCheck={{ table: "stock_moves", column: "product_id", message: "لا يمكن حذف مادة لها حركات" }} />
     <CrudPage
       table="products"
       module="products"
@@ -54,11 +63,12 @@ function ProductsPage() {
         { key: "barcode", label: "الباركود", example: "" },
         { key: "name", label: "اسم المادة", required: true, example: "إسمنت" },
         { key: "unit", label: "الوحدة", required: true, example: "طن" },
-        { key: "category", label: "التصنيف", example: "مواد بناء" },
+        { key: "category_name", label: "التصنيف", example: "مواد بناء" },
         { key: "warehouse_name", label: "المستودع", example: "المستودع الرئيسي" },
         { key: "reorder_level", label: "حد إعادة الطلب", type: "number", example: "0" },
       ]}
       importLookups={[
+        { key: "category_name", target: "parent_id", table: "products", matchOn: ["name", "sku"] },
         { key: "warehouse_name", target: "default_warehouse_id", table: "warehouses", matchOn: ["name", "code"] },
       ]}
       fields={[
@@ -66,8 +76,17 @@ function ProductsPage() {
         { key: "barcode", label: "الباركود", type: "barcode" },
         { key: "name", label: "اسم المادة", required: true },
         { key: "unit", label: "الوحدة", type: "select", options: unitOptions(units.data), defaultValue: "قطعة", required: true },
-        { key: "parent_id", label: "المادة الأب", type: "ref", refTable: "products" },
-        { key: "category", label: "التصنيف" },
+        {
+          key: "parent_id",
+          label: "التصنيف",
+          type: "ref",
+          refTable: "products",
+          refFilter: { key: "is_group", value: true },
+          refQuickAdd: {
+            label: "إضافة تصنيف",
+            defaults: { sku: `CAT-${Date.now()}`, unit: "قطعة", is_group: true, is_active: true },
+          },
+        },
         { key: "default_warehouse_id", label: "المستودع", type: "ref", refTable: "warehouses" },
         { key: "reorder_level", label: "حد إعادة الطلب", type: "number", defaultValue: 0 },
         { key: "is_active", label: "نشط", type: "checkbox", defaultValue: true },
