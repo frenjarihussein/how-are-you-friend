@@ -1029,6 +1029,7 @@ export type Database = {
           parent_id: string | null
           qty_on_hand: number
           reorder_level: number
+          sale_price: number
           sku: string
           tenant_id: string
           unit: string
@@ -1048,6 +1049,7 @@ export type Database = {
           parent_id?: string | null
           qty_on_hand?: number
           reorder_level?: number
+          sale_price?: number
           sku: string
           tenant_id: string
           unit?: string
@@ -1067,6 +1069,7 @@ export type Database = {
           parent_id?: string | null
           qty_on_hand?: number
           reorder_level?: number
+          sale_price?: number
           sku?: string
           tenant_id?: string
           unit?: string
