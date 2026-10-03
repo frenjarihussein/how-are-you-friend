@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      _mig_parts: {
+        Row: {
+          id: number
+          txt: string | null
+        }
+        Insert: {
+          id: number
+          txt?: string | null
+        }
+        Update: {
+          id?: number
+          txt?: string | null
+        }
+        Relationships: []
+      }
       accounts: {
         Row: {
           code: string
