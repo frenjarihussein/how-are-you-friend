@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Trash2, CheckCircle2, RotateCcw, Pencil, Printer } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, RotateCcw, Pencil, Printer, MessageCircle } from "lucide-react";
 import { AttachmentsButton } from "@/components/AttachmentsButton";
 import { printDocument } from "@/lib/print";
 import { useBranding } from "@/lib/branding";
@@ -92,7 +92,7 @@ function DocumentsPage() {
     enabled: !!me,
     queryFn: async () => {
       const [partners, warehouses, products, projects, accounts] = await Promise.all([
-        scope(db.from("partners").select("id,name"), me?.tenantId).order("name"),
+        scope(db.from("partners").select("id,name,phone"), me?.tenantId).order("name"),
         scope(db.from("warehouses").select("id,name"), me?.tenantId).order("name"),
         scope(db.from("products").select("id,name,sku,barcode,sale_price,last_purchase_price,avg_cost"), me?.tenantId).order("name"),
         scope(db.from("projects").select("id,name"), me?.tenantId).order("name"),
@@ -315,6 +315,30 @@ function DocumentsPage() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function sendWhatsApp(d: any) {
+    const t = DOC_TYPES.find((x) => x.value === d.doc_type);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const p = (ref.data?.partners ?? []).find((x: any) => x.id === d.partner_id);
+    let total = Number(d.amount);
+    if (t?.lines) {
+      const ls = await loadLines(d.id);
+      total = ls.reduce((s, l) => s + Number(l.qty) * Number(l.unit_price), 0);
+    }
+    const msg = [
+      me?.tenantName ?? "",
+      `${t?.label ?? "مستند"} رقم ${d.doc_no ?? "—"}`,
+      `التاريخ: ${fmtDate(d.doc_date)}`,
+      p ? `السيد/ة: ${p.name}` : "",
+      `الإجمالي: ${fmtNum(total)} ${d.currency ?? ""}`,
+      d.valid_until ? `صالح حتى: ${fmtDate(d.valid_until)}` : "",
+      "شكراً لتعاملكم معنا",
+    ].filter(Boolean).join("\n");
+    const phone = String(p?.phone ?? "").replace(/[^0-9]/g, "").replace(/^00/, "");
+    if (!phone) toast.info("لا يوجد رقم هاتف لهذا الطرف — اختر جهة الاتصال من واتساب");
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  }
+
   const facets: FacetConfig[] = [
     { key: "doc_type", label: "نوع المستند", options: DOC_TYPES.map((d) => ({ value: d.value, label: d.label })) },
     {
@@ -424,6 +448,9 @@ function DocumentsPage() {
                   <div className="flex justify-center gap-2">
                     <Button size="sm" variant="outline" title="طباعة" onClick={() => printDoc(d)}>
                       <Printer className="size-4" />
+                    </Button>
+                    <Button size="sm" variant="outline" title="إرسال عبر واتساب" onClick={() => sendWhatsApp(d)}>
+                      <MessageCircle className="size-4" />
                     </Button>
                     <AttachmentsButton entityType="document" entityId={d.id} docType={d.doc_type} variant="outline" />
                     <Button
