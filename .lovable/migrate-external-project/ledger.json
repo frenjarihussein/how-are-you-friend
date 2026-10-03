@@ -1,0 +1,6 @@
+{"capabilities":[
+{"capability":"app code (ERP: companies, accounts, journal, invoices, stock, reports, i18n)","source":"github repo","outcome":"copied into project","status":"done","next_action":"none"},
+{"capability":"database schema","source":"supabase migrations","outcome":"applied to Lovable Cloud","status":"done","next_action":"none"},
+{"capability":"auth + admin-created users","source":"supabase auth + admin.functions.ts","outcome":"email sign-in enabled","status":"done","next_action":"create owner account on /auth"},
+{"capability":"existing records/users","source":"none attached","outcome":"pending","status":"pending","next_action":"request data export from user"}
+]}

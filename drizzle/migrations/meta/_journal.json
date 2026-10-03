@@ -1,0 +1,111 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791020237930,
+      "tag": "0000_core_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791020257684,
+      "tag": "0001_supabase_migrations_20260926122612_90df90e0_0c72_4ae5_9e27_137ab6a865be_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791020270350,
+      "tag": "0002_supabase_migrations_20260926122703_166f0791_12a3_4830_8968_ad7ce8cde55d_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791020301120,
+      "tag": "0003_supabase_migrations_20260926125705_306fce98_dc61_4bf9_9c91_813bddfbc2ee_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791020311655,
+      "tag": "0004_supabase_migrations_20260926141714_84f02d2d_f470_4e51_969a_d4a3a5850e00_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791020319940,
+      "tag": "0005_supabase_migrations_20260926141817_171081ce_2402_4ce1_99eb_d2c8d6786f02_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791020331224,
+      "tag": "0006_supabase_migrations_20260927063908_f7af6aed_23b2_478c_a1e9_31567fcdb6ad_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791020388381,
+      "tag": "0007_consolidated_schema_delta",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791020413451,
+      "tag": "0008_supabase_migrations_20261003072315_bd994d16_2611_448e_8b9e_1274876af243_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791020427535,
+      "tag": "0009_supabase_migrations_20261003072519_ce6b9c0c_fe9a_43eb_a32c_37c6b7db4ced_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791020439652,
+      "tag": "0010_supabase_migrations_20261003074159_b6d8f883_6be1_49a1_938d_b3215cc42667_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791020449860,
+      "tag": "0011_supabase_migrations_20261003074728_74ceb03a_c93f_4e0b_bb6e_cdb1e691c960_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791021574053,
+      "tag": "0012_cashier_notif_prefs",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791022430842,
+      "tag": "0013_product_sale_price",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1791022604834,
+      "tag": "0014_fix_posting_flag",
+      "breakpoints": true
+    }
+  ]
+}
