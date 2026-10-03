@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/pos")({
   component: PosPage,
 });
 
-type Product = { id: string; name: string; sku: string; barcode: string | null; unit: string; category: string | null; last_purchase_price: number; sale_price: number; avg_cost: number; qty_on_hand: number };
+type Product = { id: string; name: string; sku: string; barcode: string | null; unit: string; parent_id: string | null; categoryName: string | null; last_purchase_price: number; sale_price: number; avg_cost: number; qty_on_hand: number };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Refs = { products: Product[]; warehouses: any[]; partners: any[] };
 type CartLine = { p: Product; qty: number; price: number };
@@ -50,14 +50,18 @@ function PosPage() {
     queryFn: async () => {
       if (!navigator.onLine) { const c = loadRefs<Refs>(me?.tenantId); if (c) return c; }
       const [p, w, pa] = await Promise.all([
-        scope(db.from("products").select("id,name,sku,barcode,unit,category,last_purchase_price,sale_price,avg_cost,qty_on_hand,is_group,is_active"), me?.tenantId).order("name"),
+        scope(db.from("products").select("id,name,sku,barcode,unit,parent_id,last_purchase_price,sale_price,avg_cost,qty_on_hand,is_group,is_active"), me?.tenantId).order("name"),
         scope(db.from("warehouses").select("id,name,is_group"), me?.tenantId).order("name"),
         scope(db.from("partners").select("id,name,partner_type"), me?.tenantId).order("name"),
       ]);
       if (p.error || w.error || pa.error) { const c = loadRefs<Refs>(me?.tenantId); if (c) return c; throw p.error || w.error || pa.error; }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const productRows = (p.data ?? []) as any[];
+      const categoryNames = new Map(productRows.filter((x) => x.is_group).map((x) => [x.id, x.name]));
       const out: Refs = {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        products: ((p.data ?? []) as any[]).filter((x) => !x.is_group && x.is_active !== false) as Product[],
+        products: productRows
+          .filter((x) => !x.is_group && x.is_active !== false)
+          .map((x) => ({ ...x, categoryName: x.parent_id ? categoryNames.get(x.parent_id) ?? null : null })) as Product[],
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         warehouses: ((w.data ?? []) as any[]).filter((x) => !x.is_group),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,9 +73,9 @@ function PosPage() {
   });
   const products = ref.data?.products ?? [];
   const warehouse = wh || ref.data?.warehouses[0]?.id || "";
-  const cats = useMemo(() => [...new Set(products.map((p) => p.category).filter(Boolean))] as string[], [products]);
+  const cats = useMemo(() => [...new Set(products.map((p) => p.categoryName).filter(Boolean))] as string[], [products]);
   const shown = products.filter(
-    (p) => (!cat || p.category === cat) && (!search || p.name.includes(search) || p.sku.toLowerCase().includes(search.toLowerCase())),
+    (p) => (!cat || p.categoryName === cat) && (!search || p.name.includes(search) || p.sku.toLowerCase().includes(search.toLowerCase())),
   );
   const total = cart.reduce((s, l) => s + l.qty * l.price, 0);
 
