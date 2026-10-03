@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { NAV, QUICK_ACTIONS } from "@/components/AppShell";
 import { Sparkline } from "@/components/StatCards";
 import { ArrowUpLeft } from "lucide-react";
+import { useDueCount } from "@/components/ExtraReports";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "لوحة التحكم" }, { name: "description", content: "مؤشرات مالية وتنبيهات المخزون" }] }),
@@ -131,6 +132,7 @@ function Dashboard() {
         <PageHeader title={`أهلاً ${me?.fullName ?? ""}`} subtitle="اختصاراتك ومؤشراتك المختارة" />
         <Button variant="outline" onClick={() => setEdit(true)}><Settings2 className="size-4" />تخصيص الواجهة</Button>
       </div>
+      <DueBanner />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {QUICK_ACTIONS.filter((a) => moduleEnabled(me, a.module)).map((a) => (
           <Link key={a.label} to={a.to} className="group relative flex flex-col gap-6 rounded-2xl border bg-card p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-pop">
@@ -222,5 +224,15 @@ function Dashboard() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function DueBanner() {
+  const due = useDueCount();
+  if (!due.data) return null;
+  return (
+    <Link to="/reports" className="mb-4 block rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm font-medium text-destructive">
+      لديك {due.data} شيك مستحق أو متأخر خلال 7 أيام — اضغط لعرض الاستحقاقات من صفحة التقارير
+    </Link>
   );
 }
