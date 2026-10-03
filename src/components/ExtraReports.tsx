@@ -74,7 +74,7 @@ export function ProjectProfitReport({ from, to }: { from: string; to: string }) 
     r.cost += Number(l.debit) / rate;
     map.set(l.project_id, r);
   });
-  const rows = (projects.data ?? []).map((p: any) => {
+  const rows: any[] = (projects.data ?? []).map((p: any) => {
     const r = map.get(p.id) ?? { rev: 0, cost: 0 };
     const profit = r.rev - r.cost;
     return { ...p, rev: r.rev, cost: r.cost, profit, margin: r.rev ? (profit / r.rev) * 100 : 0 };
