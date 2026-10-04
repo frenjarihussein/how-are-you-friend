@@ -325,8 +325,70 @@ export function CrudPage(props: Props) {
         searchPlaceholder={t("بحث...")}
       />
 
+      <div className="no-print mt-3 flex justify-end">
+        <div className="flex overflow-hidden rounded-lg border">
+          <Button
+            type="button"
+            size="sm"
+            variant={view === "compact" ? "default" : "ghost"}
+            className="rounded-none"
+            onClick={() => setView("compact")}
+          >
+            <LayoutList className="size-4" />
+            {t("قائمة مبسّطة")}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={view === "table" ? "default" : "ghost"}
+            className="rounded-none"
+            onClick={() => setView("table")}
+          >
+            <Table2 className="size-4" />
+            {t("الجدول الكامل")}
+          </Button>
+        </div>
+      </div>
 
+      {view === "compact" && (
+        <div className="print-area mt-3 divide-y rounded-xl border bg-card shadow-soft">
+          {rowsQuery.isLoading && (
+            <p className="px-4 py-6 text-center text-muted-foreground">{t("جارٍ التحميل...")}</p>
+          )}
+          {!rowsQuery.isLoading && rows.length === 0 && (
+            <p className="px-4 py-6 text-center text-muted-foreground">{t("لا توجد بيانات")}</p>
+          )}
+          {rows.map((row: Record<string, unknown>) => (
+            <div
+              key={String(row["id"])}
+              onClick={() => setDetail(row)}
+              className="flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-medium">{cellValue(tableFields[0]!, row, refMaps)}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {tableFields.slice(1, 4).map((f) => `${t(f.label)}: ${cellValue(f, row, refMaps)}`).join(" · ")}
+                </p>
+              </div>
+              <div className="no-print flex shrink-0 gap-1" onClick={(e) => e.stopPropagation()}>
+                {props.extraRowAction?.(row)}
+                {allowEdit && (
+                  <Button size="icon" variant="ghost" onClick={() => openEdit(row)} title={t("تعديل")}>
+                    <Pencil className="size-4" />
+                  </Button>
+                )}
+                {allowDelete && (
+                  <Button size="icon" variant="ghost" onClick={() => setToDelete(String(row["id"]))} title={t("حذف")}>
+                    <Trash2 className="size-4 text-destructive" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
+      {view === "table" && (
       <div className="print-area mt-3 overflow-x-auto rounded-xl border bg-card shadow-soft">
         <table className="w-full text-sm">
           <thead className="border-b bg-muted/50 text-xs text-muted-foreground">
