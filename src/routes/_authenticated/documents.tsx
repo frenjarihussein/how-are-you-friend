@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Trash2, CheckCircle2, RotateCcw, Pencil, Printer, MessageCircle } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, RotateCcw, Pencil, Printer, MessageCircle, LayoutList, Table2 } from "lucide-react";
 import { AttachmentsButton } from "@/components/AttachmentsButton";
 import { printDocument } from "@/lib/print";
 import { useBranding } from "@/lib/branding";
@@ -67,6 +67,7 @@ function DocumentsPage() {
   const brand = useBranding();
   const [lines, setLines] = useState<Line[]>([{ product_id: "", qty: "1", unit_price: "0" }]);
   const [filters, setFilters] = useDataFilters();
+  const [view, setView] = useState<"compact" | "table">("compact");
   const range = resolveRange(filters);
   const typeFilter = filters.facets["doc_type"] ?? [];
 
@@ -413,6 +414,68 @@ function DocumentsPage() {
         searchPlaceholder="بحث برقم المستند أو الملاحظات..."
       />
 
+      <div className="mt-3 flex justify-end">
+        <div className="flex overflow-hidden rounded-lg border">
+          <Button type="button" size="sm" variant={view === "compact" ? "default" : "ghost"} className="rounded-none" onClick={() => setView("compact")}>
+            <LayoutList className="size-4" />
+            قائمة مبسّطة
+          </Button>
+          <Button type="button" size="sm" variant={view === "table" ? "default" : "ghost"} className="rounded-none" onClick={() => setView("table")}>
+            <Table2 className="size-4" />
+            الجدول الكامل
+          </Button>
+        </div>
+      </div>
+
+      {view === "compact" && (
+        <div className="mt-3 divide-y rounded-lg border bg-card">
+          {rows.length === 0 && (
+            <p className="px-4 py-6 text-center text-muted-foreground">لا توجد مستندات</p>
+          )}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {rows.map((d: any) => (
+            <div key={d.id} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/50">
+              <div className="min-w-0 flex-1 cursor-pointer" onClick={() => startEdit(d)}>
+                <p className="truncate font-medium">
+                  {DOC_TYPES.find((t) => t.value === d.doc_type)?.label} #{d.doc_no}
+                  <span className="mx-2 text-xs font-normal text-muted-foreground">{fmtDate(d.doc_date)}</span>
+                </p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {(ref.data?.partners ?? []).find((p: any) => p.id === d.partner_id)?.name ?? "—"}
+                  {" · "}
+                  {fmtNum(d.amount)} {d.currency}
+                </p>
+              </div>
+              <span className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${d.status === "posted" ? "bg-status-posted text-status-posted-foreground" : "bg-status-draft text-status-draft-foreground"}`}>
+                {d.doc_type === "quote" ? (d.converted_document_id ? "محوّل لفاتورة" : d.valid_until && d.valid_until < today() ? "منتهي" : "عرض سعر") : d.status === "posted" ? "مرحّل" : "مسودة"}
+              </span>
+              <div className="flex shrink-0 gap-1">
+                <Button size="icon" variant="ghost" title="طباعة" onClick={() => printDoc(d)}>
+                  <Printer className="size-4" />
+                </Button>
+                <Button size="icon" variant="ghost" title="واتساب" onClick={() => sendWhatsApp(d)}>
+                  <MessageCircle className="size-4" />
+                </Button>
+                {d.status === "draft" && d.doc_type !== "quote" && can(me, "documents", "edit") && (
+                  <Button size="sm" variant="outline" onClick={() => post.mutate(d.id)}>
+                    <CheckCircle2 className="size-4" />
+                    ترحيل
+                  </Button>
+                )}
+                {d.status === "draft" && d.doc_type === "quote" && can(me, "documents", "create") && !d.converted_document_id && (
+                  <Button size="sm" variant="outline" disabled={convert.isPending} onClick={() => convert.mutate(d)}>
+                    <CheckCircle2 className="size-4" />
+                    تحويل لفاتورة
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {view === "table" && (
       <div className="overflow-x-auto rounded-lg border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-secondary">
@@ -522,6 +585,7 @@ function DocumentsPage() {
           </tbody>
         </table>
       </div>
+      )}
 
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
         <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">

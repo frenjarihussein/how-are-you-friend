@@ -6,4 +6,4 @@
 - [x] Dashboard with chosen shortcut tiles and figures
 - [x] Product sale price + selectable categories with quick category creation
 - [x] Project profit, customer aging, due alerts, WhatsApp send
-- [ ] Compact list pages (summary first, full table on demand) — pending user confirmation of which pages
+- [x] Compact list pages (documents, products, partners) — compact default with full-table toggle
