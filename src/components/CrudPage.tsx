@@ -450,6 +450,7 @@ export function CrudPage(props: Props) {
           </tbody>
         </table>
       </div>
+      )}
 
       <Sheet open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
         <SheetContent side={dir === "rtl" ? "left" : "right"} className="w-full overflow-y-auto sm:max-w-md" dir={dir}>
