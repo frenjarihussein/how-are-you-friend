@@ -585,6 +585,7 @@ function DocumentsPage() {
           </tbody>
         </table>
       </div>
+      )}
 
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
         <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
