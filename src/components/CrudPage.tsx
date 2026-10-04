@@ -29,7 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Download, Pencil, Plus, Printer, Trash2 } from "lucide-react";
+import { Download, LayoutList, Pencil, Plus, Printer, Table2, Trash2 } from "lucide-react";
 import {
   DataFilters,
   applyFilters,
@@ -100,6 +100,7 @@ export function CrudPage(props: Props) {
   const [form, setForm] = useState<Record<string, any>>({});
   const [toDelete, setToDelete] = useState<string | null>(null);
   const [filters, setFilters] = useDataFilters();
+  const [view, setView] = useState<"compact" | "table">("compact");
 
   // Every read is explicitly scoped to the active company on top of RLS.
   const tenantId = me?.tenantId ?? null;
