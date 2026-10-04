@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Trash2, CheckCircle2, RotateCcw, Pencil, Printer, MessageCircle } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, RotateCcw, Pencil, Printer, MessageCircle, LayoutList, Table2 } from "lucide-react";
 import { AttachmentsButton } from "@/components/AttachmentsButton";
 import { printDocument } from "@/lib/print";
 import { useBranding } from "@/lib/branding";
@@ -67,6 +67,7 @@ function DocumentsPage() {
   const brand = useBranding();
   const [lines, setLines] = useState<Line[]>([{ product_id: "", qty: "1", unit_price: "0" }]);
   const [filters, setFilters] = useDataFilters();
+  const [view, setView] = useState<"compact" | "table">("compact");
   const range = resolveRange(filters);
   const typeFilter = filters.facets["doc_type"] ?? [];
 
